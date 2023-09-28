@@ -9,8 +9,10 @@ namespace Radiao.Domain.Repositories
 
         Task<List<Station>> GetAll();
 
-        Task<List<Station>> GetByPopularity();
+        Task<List<Station>> GetByCategory(string categories);
 
-        Task<List<Station>> GetByCategory();
+        Task<List<Station>> GetTrending();
+
+        Task<List<Station>> GetPopular();
     }
 }

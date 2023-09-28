@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Radiao.Data.MySql;
+using Radiao.Data.RadioBrowser;
 using Radiao.Domain.Repositories;
 using Radiao.Domain.Services;
 using Radiao.Domain.Services.Impl;
@@ -34,6 +35,8 @@ builder.Services.AddLogging(logging => logging.AddConsole());
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddScoped<IStationRepository, StationRepository>();
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
