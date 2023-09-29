@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Radiao.Domain.Repositories;
+using Radiao.Domain.Services.Notifications;
 
 namespace Radiao.Api.Controllers
 {
@@ -11,7 +12,8 @@ namespace Radiao.Api.Controllers
 
         public StationController(
             ILogger<StationController> logger,
-            IStationRepository stationRepository) : base(logger)
+            INotifier notifier,
+            IStationRepository stationRepository) : base(logger, notifier)
         {
             _stationRepository = stationRepository;
         }

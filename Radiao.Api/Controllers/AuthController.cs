@@ -2,6 +2,7 @@
 using Radiao.Api.Helpers;
 using Radiao.Api.ViewModels;
 using Radiao.Domain.Repositories;
+using Radiao.Domain.Services.Notifications;
 
 namespace Radiao.Api.Controllers
 {
@@ -14,8 +15,9 @@ namespace Radiao.Api.Controllers
 
         public AuthController(
             ILogger<AuthController> logger,
+            INotifier notifier,
             IUserRepository userRepository,
-            IConfiguration configuration) : base(logger)
+            IConfiguration configuration) : base(logger, notifier)
         {
             _userRepository = userRepository;
             _configuration = configuration;
@@ -28,7 +30,8 @@ namespace Radiao.Api.Controllers
 
             if (user == null || !user.ValidatePassword(authViewModel.Password))
             {
-                return BadRequest("usuário ou senha incorretos!");
+                Notify("Usuário ou senha incorretos!");
+                return CustomResponse();
             }
 
             var secret = _configuration.GetSection("JwtConfig").GetValue<string>("JwtSecret");

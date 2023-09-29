@@ -78,5 +78,15 @@ namespace Radiao.Data.MySql
 
             return user;
         }
+
+        public async Task UpdatePassword(int id, string password)
+        {
+            var query = new StringBuilder();
+            query.Append("update users set Password = @password ");
+            query.Append("where Id = @id");
+
+            using var connection = new MySqlConnection(_connectionString);
+            await connection.ExecuteAsync(query.ToString(), new { id, password });
+        }
     }
 }

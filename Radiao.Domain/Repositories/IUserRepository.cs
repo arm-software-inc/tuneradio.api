@@ -8,6 +8,8 @@ namespace Radiao.Domain.Repositories
 
         Task<User> Update(User user);
 
+        Task UpdatePassword(int userId, string password);
+
         Task Delete(int id);
 
         Task<User?> Get(int id);

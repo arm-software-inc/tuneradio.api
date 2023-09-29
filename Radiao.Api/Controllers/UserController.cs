@@ -5,6 +5,7 @@ using Radiao.Api.ViewModels;
 using Radiao.Domain.Entities;
 using Radiao.Domain.Repositories;
 using Radiao.Domain.Services;
+using Radiao.Domain.Services.Notifications;
 
 namespace Radiao.Api.Controllers
 {
@@ -19,9 +20,10 @@ namespace Radiao.Api.Controllers
 
         public UserController(
             ILogger<UserController> logger,
+            INotifier notifier,
             IUserService userService,
             IMapper mapper,
-            IUserRepository userRepository) : base(logger)
+            IUserRepository userRepository) : base(logger, notifier)
         {
             _userService = userService;
             _mapper = mapper;
@@ -45,6 +47,11 @@ namespace Radiao.Api.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> Post([FromBody] UserViewModel userViewModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return CustomResponse(ModelState);
+            }
+
             var user = _mapper.Map<User>(userViewModel);
 
             return CustomResponse(_mapper.Map<UserViewModel>(await _userService.Create(user)));

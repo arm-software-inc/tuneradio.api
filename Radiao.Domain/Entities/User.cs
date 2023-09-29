@@ -32,6 +32,11 @@
             return BCrypt.Net.BCrypt.Verify(inputPassword, Password);
         }
 
+        public void ChangeAndHashPassword(string inputPassword)
+        {
+            Password = BCrypt.Net.BCrypt.HashPassword(inputPassword, BCrypt.Net.BCrypt.GenerateSalt(15));
+        }
+
         public void SetActive()
         {
             IsActive = true;

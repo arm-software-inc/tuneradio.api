@@ -1,19 +1,21 @@
 ﻿using Radiao.Domain.Entities;
 using Radiao.Domain.Repositories;
+using Radiao.Domain.Services.Notifications;
 
 namespace Radiao.Domain.Services.Impl
 {
-    public class UserService : IUserService
+    public class UserService : ServiceBase, IUserService
     {
         private readonly IUserRepository _userRepository;
 
         public UserService(
-            IUserRepository userRepository)
+            IUserRepository userRepository,
+            INotifier notifier) : base(notifier)
         {
             _userRepository = userRepository;
         }
 
-        public async Task<User> Create(User user)
+        public async Task<User?> Create(User user)
         {
             user.HashPassword();
             user.SetActive();
@@ -21,7 +23,8 @@ namespace Radiao.Domain.Services.Impl
             var emailAlreadyInUse = await _userRepository.GetByEmail(user.Email);
             if (emailAlreadyInUse != null)
             {
-                throw new Exception("email em uso");
+                Notify("Este email já está sendo usado!");
+                return null;
             }
 
             await _userRepository.Create(user);
@@ -32,6 +35,20 @@ namespace Radiao.Domain.Services.Impl
         public async Task<User> Update(User user)
         {
             return await _userRepository.Update(user);
+        }
+
+        public async Task UpdatePassword(int userId, string password)
+        {
+            var user = await _userRepository.Get(userId);
+
+            if (user == null)
+            {
+                return;
+            }
+
+            user.ChangeAndHashPassword(password);
+
+            await _userRepository.UpdatePassword(userId, user.Password);
         }
     }
 }
