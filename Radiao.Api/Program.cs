@@ -11,6 +11,8 @@ builder.Services.ConfigureJWT(builder.Configuration);
 
 builder.Services.ConfigureDependencyInjection();
 
+builder.Services.ConfigureSwagger();
+
 builder.Services.AddControllers();
 
 var app = builder.Build();
@@ -25,5 +27,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.AddSwagger();
 
 app.Run();

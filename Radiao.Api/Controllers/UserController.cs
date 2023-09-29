@@ -30,8 +30,16 @@ namespace Radiao.Api.Controllers
             _userRepository = userRepository;
         }
 
+        /// <summary>
+        /// Get the authenticated user
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult> Get()
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserViewModel))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponseViewModel))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<UserViewModel>> Get()
         {
             var user = await _userRepository.Get(GetUserId());
 
@@ -43,9 +51,17 @@ namespace Radiao.Api.Controllers
             return CustomResponse(_mapper.Map<UserViewModel>(user));
         }
 
+        /// <summary>
+        /// SignUp
+        /// </summary>
+        /// <param name="userViewModel"></param>
+        /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
-        public async Task<ActionResult> Post([FromBody] UserViewModel userViewModel)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserViewModel))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponseViewModel))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<UserViewModel>> Post([FromBody] UserViewModel userViewModel)
         {
             if (!ModelState.IsValid)
             {
@@ -57,8 +73,17 @@ namespace Radiao.Api.Controllers
             return CustomResponse(_mapper.Map<UserViewModel>(await _userService.Create(user)));
         }
 
+        /// <summary>
+        /// Updates user`s account
+        /// </summary>
+        /// <param name="userViewModel"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put([FromBody] EditUserViewModel userViewModel, int id)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserViewModel))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponseViewModel))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<UserViewModel>> Put([FromBody] EditUserViewModel userViewModel, int id)
         {
             if (userViewModel.Id != id)
             {
@@ -74,7 +99,15 @@ namespace Radiao.Api.Controllers
             return CustomResponse(_mapper.Map<UserViewModel>(user));
         }
 
+        /// <summary>
+        /// Disable user's account
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponseViewModel))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> Delete(int id)
         {
             await _userRepository.Delete(id);

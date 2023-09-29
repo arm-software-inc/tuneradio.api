@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Radiao.Api.Helpers;
 using Radiao.Api.ViewModels;
 using Radiao.Domain.Repositories;
@@ -10,6 +11,7 @@ namespace Radiao.Api.Controllers
     [Route("[controller]")]
     public class AuthController : MainController
     {
+        private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
         private readonly IUserRepository _userRepository;
 
@@ -17,13 +19,23 @@ namespace Radiao.Api.Controllers
             ILogger<AuthController> logger,
             INotifier notifier,
             IUserRepository userRepository,
-            IConfiguration configuration) : base(logger, notifier)
+            IConfiguration configuration,
+            IMapper mapper) : base(logger, notifier)
         {
             _userRepository = userRepository;
             _configuration = configuration;
+            _mapper = mapper;
         }
 
+        /// <summary>
+        /// SignIn
+        /// </summary>
+        /// <param name="authViewModel"></param>
+        /// <returns></returns>
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AuthResultViewModel))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponseViewModel))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> Auth(AuthViewModel authViewModel)
         {
             var user = await _userRepository.GetByEmail(authViewModel.Email);
@@ -37,12 +49,29 @@ namespace Radiao.Api.Controllers
             var secret = _configuration.GetSection("JwtConfig").GetValue<string>("JwtSecret");
             var token = TokenHelper.GenerateToken(user, secret);
 
-            return CustomResponse(new { token, user });
+            return CustomResponse(new AuthResultViewModel
+            {
+                Token = token,
+                User = _mapper.Map<UserViewModel>(user)
+            });
         }
 
+        /// <summary>
+        /// Send an email to recover the user's password
+        /// </summary>
+        /// <param name="recoveryPassword">user's email</param>
+        /// <returns></returns>
         [HttpPost("recovery")]
-        public async Task<ActionResult> RecoveryPassword(string email)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponseViewModel))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> RecoveryPassword([FromBody] RecoveryPasswordViewModel recoveryPassword)
         {
+            if (!ModelState.IsValid)
+            {
+                return CustomResponse(ModelState);
+            }
+
             return Ok();
         }
     }
