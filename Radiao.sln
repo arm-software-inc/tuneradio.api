@@ -9,7 +9,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Radiao.Domain", "Radiao.Dom
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Radiao.Data", "Radiao.Data\Radiao.Data.csproj", "{1977DDDA-80AD-4844-952E-3174D7AD7B8F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Radio.Tests", "Radio.Tests\Radio.Tests.csproj", "{F0422A3D-DC95-4CB9-BB19-6117A26A4AC1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Radio.Tests", "Radio.Tests\Radio.Tests.csproj", "{F0422A3D-DC95-4CB9-BB19-6117A26A4AC1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Itens de Solução", "Itens de Solução", "{C924CE86-8A6B-4441-BB67-149C86E3796C}"
+	ProjectSection(SolutionItems) = preProject
+		scripts\mysql_create_tables.sql = scripts\mysql_create_tables.sql
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
