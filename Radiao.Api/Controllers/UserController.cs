@@ -85,11 +85,11 @@ namespace Radiao.Api.Controllers
         /// <param name="userViewModel"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpPut("{id}")]
+        [HttpPut("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserViewModel))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponseViewModel))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<UserViewModel>> Put([FromBody] EditUserViewModel userViewModel, int id)
+        public async Task<ActionResult<UserViewModel>> Put([FromBody] EditUserViewModel userViewModel, Guid id)
         {
             if (userViewModel.Id != id)
             {
@@ -110,11 +110,11 @@ namespace Radiao.Api.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponseViewModel))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult> Delete(Guid id)
         {
             await _userRepository.Delete(id);
 

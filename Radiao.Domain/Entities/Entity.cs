@@ -2,6 +2,11 @@
 {
     abstract public class Entity
     {
-        public int Id { get; private set; }
+        public Guid Id { get; protected set; }
+
+        public void NewId()
+        {
+            Id = Guid.NewGuid();
+        }
     }
 }

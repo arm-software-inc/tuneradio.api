@@ -2,7 +2,7 @@
 {
     public class Favorite : Entity
     {
-        public int UserId { get; private set; }
+        public Guid UserId { get; private set; }
 
         public Guid StationId { get; private set; }
 
@@ -11,7 +11,7 @@
         private Favorite()
         {}
 
-        public Favorite(int userId, Guid stationId)
+        public Favorite(Guid userId, Guid stationId)
         {
             UserId = userId;
             StationId = stationId;

@@ -22,15 +22,15 @@ namespace Radiao.Api.Controllers
             Logger = logger;
         }
 
-        protected int GetUserId()
+        protected Guid GetUserId()
         {
             var claim = User.Claims.FirstOrDefault(c => c.Type == "Id");
             if (claim == null)
             {
-                return 0;
+                return Guid.Empty;
             }
 
-            return int.Parse(claim.Value);
+            return Guid.Parse(claim.Value);
         }
 
         protected ActionResult CustomResponse(object? data = null)

@@ -6,6 +6,6 @@ namespace Radiao.Domain.Services
     {
         Task<User?> Create(User user);
 
-        Task UpdatePassword(int userId, string password);
+        Task UpdatePassword(Guid userId, string password);
     }
 }

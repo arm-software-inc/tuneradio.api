@@ -4,7 +4,7 @@ namespace Radiao.Api.ViewModels
 {
     public class UserViewModel
     {
-        public int Id { get; set; }
+        public Guid? Id { get; set; }
 
         [Required(ErrorMessage = "Campo Email obrigatório")]
         [MaxLength(255, ErrorMessage = "Máximo de 255 caracteres")]

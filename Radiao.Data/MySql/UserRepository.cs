@@ -18,9 +18,11 @@ namespace Radiao.Data.MySql
 
         public async Task<User> Create(User user)
         {
+            user.NewId();
+
             var query = new StringBuilder();
-            query.Append("insert into users (Email, Password, Name) ");
-            query.Append("values (@Email, @Password, @Name) ");
+            query.Append("insert into users (Id, Email, Password, Name) ");
+            query.Append("values (@Id, @Email, @Password, @Name) ");
 
             using var connection = new MySqlConnection(_connectionString);
             await connection.ExecuteAsync(query.ToString(), user);
@@ -28,7 +30,7 @@ namespace Radiao.Data.MySql
             return user;
         }
 
-        public async Task Delete(int id)
+        public async Task Delete(Guid id)
         {
             var query = new StringBuilder();
             query.Append("update users set IsActive = false ");
@@ -38,7 +40,7 @@ namespace Radiao.Data.MySql
             await connection.ExecuteAsync(query.ToString(), new { id });
         }
 
-        public async Task<User?> Get(int id)
+        public async Task<User?> Get(Guid id)
         {
             var query = new StringBuilder();
             query.Append("select * from users ");
@@ -79,7 +81,7 @@ namespace Radiao.Data.MySql
             return user;
         }
 
-        public async Task UpdatePassword(int id, string password)
+        public async Task UpdatePassword(Guid id, string password)
         {
             var query = new StringBuilder();
             query.Append("update users set Password = @password ");

@@ -37,7 +37,7 @@ namespace Radiao.Domain.Services.Impl
             return await _userRepository.Update(user);
         }
 
-        public async Task UpdatePassword(int userId, string password)
+        public async Task UpdatePassword(Guid userId, string password)
         {
             var user = await _userRepository.Get(userId);
 

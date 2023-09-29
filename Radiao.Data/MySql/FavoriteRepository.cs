@@ -18,9 +18,11 @@ namespace Radiao.Data.MySql
 
         public async Task<Favorite> Create(Favorite favorite)
         {
+            favorite.NewId();
+
             var query = new StringBuilder();
-            query.Append("insert into favorites (UserId, StationId) ");
-            query.Append("values (@UserId, @StationId)");
+            query.Append("insert into favorites (Id, UserId, StationId) ");
+            query.Append("values (@Id, @UserId, @StationId)");
 
             using var connection = new MySqlConnection(_connectionString);
             await connection.ExecuteAsync(query.ToString(), favorite);
@@ -28,7 +30,7 @@ namespace Radiao.Data.MySql
             return favorite;
         }
 
-        public async Task Delete(int id)
+        public async Task Delete(Guid id)
         {
             var query = new StringBuilder();
             query.Append("delete from favorites ");
@@ -38,7 +40,7 @@ namespace Radiao.Data.MySql
             await connection.ExecuteAsync(query.ToString(), new { id });
         }
 
-        public async Task<Favorite?> Get(int id)
+        public async Task<Favorite?> Get(Guid id)
         {
             var query = new StringBuilder();
             query.Append("select * from favorites ");
@@ -48,7 +50,7 @@ namespace Radiao.Data.MySql
             return await connection.QueryFirstOrDefaultAsync<Favorite>(query.ToString(), new { id });
         }
 
-        public async Task<List<Favorite>> GetAll(int userId)
+        public async Task<List<Favorite>> GetAll(Guid userId)
         {
             var query = new StringBuilder();
             query.Append("select * from favorites ");
@@ -58,7 +60,7 @@ namespace Radiao.Data.MySql
             return (List<Favorite>)await connection.QueryAsync<Favorite>(query.ToString(), new { userId });
         }
 
-        public async Task<Favorite?> GetByUserAndStation(int userId, Guid stationId)
+        public async Task<Favorite?> GetByUserAndStation(Guid userId, Guid stationId)
         {
             var query = new StringBuilder();
             query.Append("select * from favorites ");

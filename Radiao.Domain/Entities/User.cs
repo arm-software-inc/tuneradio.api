@@ -12,7 +12,8 @@
 
         public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
-        private User() {}
+        private User()
+        {}
 
         public User(string email, string password, string name, bool isActive = true)
         {
@@ -20,6 +21,7 @@
             Password = password;
             Name = name;
             IsActive = isActive;
+            Id = Guid.NewGuid();
         }
 
         public void HashPassword()
