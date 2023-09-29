@@ -6,10 +6,12 @@ namespace Radiao.Domain.Repositories
     {
         Task<Favorite> Create(Favorite favorite);
 
-        Task Delete(Guid id);
+        Task Delete(int id);
 
-        Task<Favorite?> Get(Guid id);
+        Task<Favorite?> Get(int id);
 
-        Task<List<Favorite>> GetAll();
+        Task<Favorite?> GetByUserAndStation(int userId, Guid stationId);
+
+        Task<List<Favorite>> GetAll(int userId);
     }
 }

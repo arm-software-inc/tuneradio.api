@@ -26,9 +26,24 @@ namespace Radiao.Data.RadioBrowser
             _httpClient.BaseAddress = new Uri(url!);            
         }
 
-        public Task<Station?> Get(Guid id)
+        public async Task<Station?> Get(string id)
         {
-            return _httpClient.GetFromJsonAsync<Station>("");
+            var response = await _httpClient.GetAsync($"/json/stations/byuuid?uuids={id}", new CancellationToken());
+
+            if (response == null || !response.IsSuccessStatusCode)
+            {
+                _logger.LogError($"Ocorreu um erro ao buscar a estação! {response?.StatusCode} - {response?.ReasonPhrase}");
+                return null;
+            }
+
+            var content = await response.Content.ReadFromJsonAsync<List<Station>>();
+
+            if (content == null || content.Count == 0)
+            {
+                return null;
+            }
+
+            return content.FirstOrDefault();
         }
 
         public async Task<List<Station>> GetAll()

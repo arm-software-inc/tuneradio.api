@@ -17,17 +17,23 @@ namespace Radiao.Api.Controllers
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
         private readonly IUserRepository _userRepository;
+        private readonly IFavoriteRepository _favoriteRepository;
+        private readonly IStationRepository _stationRepository;
 
         public UserController(
             ILogger<UserController> logger,
             INotifier notifier,
             IUserService userService,
             IMapper mapper,
-            IUserRepository userRepository) : base(logger, notifier)
+            IUserRepository userRepository,
+            IFavoriteRepository favoriteRepository,
+            IStationRepository stationRepository) : base(logger, notifier)
         {
             _userService = userService;
             _mapper = mapper;
             _userRepository = userRepository;
+            _favoriteRepository = favoriteRepository;
+            _stationRepository = stationRepository;
         }
 
         /// <summary>
@@ -114,23 +120,78 @@ namespace Radiao.Api.Controllers
 
             return CustomResponse();
         }
-
+        
+        /// <summary>
+        /// Fetch user's favorite stations
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("favorite")]
-        public async Task<ActionResult> GetFavorites()
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Station>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<List<Station>>> GetFavorites()
         {
-            return Ok();
+            var favorites = await _favoriteRepository.GetAll(GetUserId());
+
+            var stations = new List<Station>();
+
+            foreach (var favorite in favorites)
+            {
+                var station = await _stationRepository.Get(favorite.StationId.ToString());
+                if (station != null)
+                {
+                    stations.Add(station);
+                }
+            }
+
+            return CustomResponse(stations);
         }
 
+        /// <summary>
+        /// Add a station as favorite
+        /// </summary>
+        /// <param name="stationId"></param>
+        /// <returns></returns>
         [HttpPost("favorite/{stationid:guid}")]
-        public async Task<ActionResult> PostFavorite()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponseViewModel))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> PostFavorite(Guid stationId)
         {
-            return Ok();
+            var userId = GetUserId();
+
+            var favorite = await _favoriteRepository.GetByUserAndStation(userId, stationId);
+            if (favorite == null)
+            {
+                await _favoriteRepository.Create(new Favorite(userId, stationId));
+            }
+
+            return CustomResponse();
         }
 
+        /// <summary>
+        /// Remove station as favorite
+        /// </summary>
+        /// <param name="stationId"></param>
+        /// <returns></returns>
         [HttpDelete("favorite/{stationid:guid}")]
-        public async Task<ActionResult> DeleteFavorite()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponseViewModel))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> DeleteFavorite(Guid stationId)
         {
-            return Ok();
+            var userId = GetUserId();
+
+            var favorite = await _favoriteRepository.GetByUserAndStation(userId, stationId);
+
+            if (favorite == null)
+            {
+                return NotFound();
+            }
+
+            await _favoriteRepository.Delete(favorite.Id);
+
+            return CustomResponse();
         }
     }
 }

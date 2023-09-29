@@ -5,7 +5,7 @@ namespace Radiao.Domain.Repositories
     public interface IStationRepository
     {
 
-        Task<Station?> Get(Guid id);
+        Task<Station?> Get(string id);
 
         Task<List<Station>> GetAll();
 

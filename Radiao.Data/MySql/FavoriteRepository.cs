@@ -1,28 +1,75 @@
-﻿using Radiao.Domain.Entities;
+﻿using Dapper;
+using Microsoft.Extensions.Configuration;
+using MySql.Data.MySqlClient;
+using Radiao.Domain.Entities;
 using Radiao.Domain.Repositories;
+using System.Text;
 
 namespace Radiao.Data.MySql
 {
     public class FavoriteRepository : IFavoriteRepository
     {
-        public Task<Favorite> Create(Favorite favorite)
+        private readonly string _connectionString;
+
+        public FavoriteRepository(IConfiguration configuration)
         {
-            throw new NotImplementedException();
+            _connectionString = configuration.GetConnectionString("MySql")!;
         }
 
-        public Task Delete(Guid id)
+        public async Task<Favorite> Create(Favorite favorite)
         {
-            throw new NotImplementedException();
+            var query = new StringBuilder();
+            query.Append("insert into favorites (UserId, StationId) ");
+            query.Append("values (@UserId, @StationId)");
+
+            using var connection = new MySqlConnection(_connectionString);
+            await connection.ExecuteAsync(query.ToString(), favorite);
+
+            return favorite;
         }
 
-        public Task<Favorite?> Get(Guid id)
+        public async Task Delete(int id)
         {
-            throw new NotImplementedException();
+            var query = new StringBuilder();
+            query.Append("delete from favorites ");
+            query.Append("where Id = @id");
+
+            using var connection = new MySqlConnection(_connectionString);
+            await connection.ExecuteAsync(query.ToString(), new { id });
         }
 
-        public Task<List<Favorite>> GetAll()
+        public async Task<Favorite?> Get(int id)
         {
-            throw new NotImplementedException();
+            var query = new StringBuilder();
+            query.Append("select * from favorites ");
+            query.Append("where Id = @id");
+
+            using var connection = new MySqlConnection(_connectionString);
+            return await connection.QueryFirstOrDefaultAsync<Favorite>(query.ToString(), new { id });
+        }
+
+        public async Task<List<Favorite>> GetAll(int userId)
+        {
+            var query = new StringBuilder();
+            query.Append("select * from favorites ");
+            query.Append("where UserId = @userId");
+
+            using var connection = new MySqlConnection(_connectionString);
+            return (List<Favorite>)await connection.QueryAsync<Favorite>(query.ToString(), new { userId });
+        }
+
+        public async Task<Favorite?> GetByUserAndStation(int userId, Guid stationId)
+        {
+            var query = new StringBuilder();
+            query.Append("select * from favorites ");
+            query.Append("where UserId = @userId and StationId = @stationId");
+
+            using var connection = new MySqlConnection(_connectionString);
+            return await connection.QueryFirstOrDefaultAsync<Favorite>(query.ToString(), new
+            { 
+                userId,
+                stationId
+            });
         }
     }
 }

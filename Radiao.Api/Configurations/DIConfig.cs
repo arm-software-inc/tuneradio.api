@@ -14,6 +14,7 @@ namespace Radiao.Api.Configurations
             // repositories
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IStationRepository, StationRepository>();
+            services.AddScoped<IFavoriteRepository, FavoriteRepository>();
 
             // services
             services.AddScoped<INotifier, Notifier>();

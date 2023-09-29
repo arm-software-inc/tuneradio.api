@@ -2,15 +2,16 @@
 {
     public class Favorite : Entity
     {
-        public Guid UserId { get; private set; }
-
-        public User? User { get; private set; }
+        public int UserId { get; private set; }
 
         public Guid StationId { get; private set; }
 
         public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
-        public Favorite(Guid userId, Guid stationId)
+        private Favorite()
+        {}
+
+        public Favorite(int userId, Guid stationId)
         {
             UserId = userId;
             StationId = stationId;
