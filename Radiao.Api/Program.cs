@@ -5,6 +5,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.ConfigCors();
+
 builder.Services.AddLogging(logging => logging.AddConsole());
 
 builder.Services.ConfigureJWT(builder.Configuration);
@@ -20,6 +22,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 
 app.UseHttpsRedirection();
+
+app.AddCors();
 
 app.UseMiddleware(typeof(ExceptionMiddleware));
 
