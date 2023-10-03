@@ -27,7 +27,7 @@ namespace Radiao.Data.MySql
             using var connection = new MySqlConnection(_connectionString);
             await connection.ExecuteAsync(query.ToString(), user);
             
-            return user;
+            return await connection.QueryFirstOrDefaultAsync<User>("select * from users where Id = @id", new { id = user.Id });
         }
 
         public async Task Delete(Guid id)

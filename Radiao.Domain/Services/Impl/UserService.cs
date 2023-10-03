@@ -27,9 +27,7 @@ namespace Radiao.Domain.Services.Impl
                 return null;
             }
 
-            await _userRepository.Create(user);
-
-            return user;
+            return await _userRepository.Create(user);
         }
 
         public async Task<User> Update(User user)

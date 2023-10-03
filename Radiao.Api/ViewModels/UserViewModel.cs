@@ -19,6 +19,6 @@ namespace Radiao.Api.ViewModels
 
         public bool IsActive { get; set; }
 
-        public DateTime CreatedAt { get; }
+        public DateTime CreatedAt { get; private set; }
     }
 }

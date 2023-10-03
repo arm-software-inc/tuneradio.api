@@ -8,7 +8,10 @@ namespace Radiao.Api.Mappings
     {
         public UserMapping()
         {
-            CreateMap<User, UserViewModel>().ReverseMap();
+            CreateMap<User, UserViewModel>()
+                .ForMember(user => user.Password, opt => opt.Ignore());
+            
+            CreateMap<UserViewModel, User>();
 
             CreateMap<EditUserViewModel, User>();
         }
