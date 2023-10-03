@@ -8,6 +8,8 @@
 
         public string Name { get; set; }
 
+        public string Url { get; set; }
+        
         public string UrlResolved { get; set; }
 
         public string Homepage { get; set; }
@@ -29,6 +31,7 @@
             Guid stationUuid,
             string name,
             string urlResolved,
+            string url,
             string homepage,
             string favicon,
             string tags,
@@ -40,6 +43,7 @@
             ChangeUuid = changeUuid;
             StationUuid = stationUuid;
             Name = name;
+            Url = url;
             UrlResolved = urlResolved;
             Homepage = homepage;
             Favicon = favicon;
