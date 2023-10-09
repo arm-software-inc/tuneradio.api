@@ -1,7 +1,14 @@
 using Radiao.Api.Configurations;
 using Radiao.Api.Middlewares;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// configure log services
+
+Log.Logger = LogConfig.ConfigSerilog(builder.Configuration);
+
+builder.Host.UseSerilog();
 
 // Add services to the container.
 
