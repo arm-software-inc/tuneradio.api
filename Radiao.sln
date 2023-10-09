@@ -13,6 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Radio.Tests", "Radio.Tests\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Itens de Solução", "Itens de Solução", "{C924CE86-8A6B-4441-BB67-149C86E3796C}"
 	ProjectSection(SolutionItems) = preProject
+		scripts\insert_tags.sql = scripts\insert_tags.sql
 		scripts\mysql_create_tables.sql = scripts\mysql_create_tables.sql
 	EndProjectSection
 EndProject
