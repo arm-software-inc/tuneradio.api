@@ -15,10 +15,12 @@ namespace Radiao.Api.Configurations
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IStationRepository, StationRepository>();
             services.AddScoped<IFavoriteRepository, FavoriteRepository>();
+            services.AddScoped<ITagRepository, TagRepository>();
 
             // services
             services.AddScoped<INotifier, Notifier>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ITagService, TagService>();
 
             // others
             services.AddAutoMapper(typeof(Program).Assembly);

@@ -1,4 +1,4 @@
-CREATE TABLE users (
+CREATE TABLE if not exists users (
 	Id CHAR(36) PRIMARY KEY,
 	Email VARCHAR(255) NOT NULL UNIQUE,
 	`Password` VARCHAR(255) NOT NULL,
@@ -7,7 +7,7 @@ CREATE TABLE users (
 	CreatedAt DATETIME DEFAULT now()
 );
 
-CREATE TABLE favorites (
+CREATE TABLE if not exists favorites (
 	Id CHAR(36) PRIMARY KEY,
 	UserId CHAR(36) NOT NULL,
 	StationId CHAR(36) NOT NULL,
@@ -15,3 +15,9 @@ CREATE TABLE favorites (
 	FOREIGN KEY (UserId) REFERENCES users(Id)
 );
 
+CREATE TABLE if not exists tags (
+	Id CHAR(36) PRIMARY KEY,
+	`Name` VARCHAR(50) NOT NULL UNIQUE,
+	IsActive BIT DEFAULT 1,
+	CreatedAt DATETIME DEFAULT NOW()
+);
