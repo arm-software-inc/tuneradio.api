@@ -5,6 +5,7 @@ using Radiao.Api.Helpers;
 using Radiao.Api.ViewModels;
 using Radiao.Domain.Repositories;
 using Radiao.Domain.Services.Notifications;
+using System.Configuration;
 
 namespace Radiao.Api.Controllers
 {
@@ -89,7 +90,15 @@ namespace Radiao.Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> GoogleSignIn([FromForm] string credential)
         {
-            GoogleJsonWebSignature.Payload payload = await GoogleJsonWebSignature.ValidateAsync(credential);
+            var clientId = _configuration
+                .GetSection("Authentication")
+                .GetSection("Google")
+                .GetValue<string>("ClientId");
+
+            GoogleJsonWebSignature.Payload payload = await GoogleJsonWebSignature.ValidateAsync(credential, new GoogleJsonWebSignature.ValidationSettings
+            {
+                Audience = new List<string> { clientId! },
+            });
 
             if (payload == null)
             {
