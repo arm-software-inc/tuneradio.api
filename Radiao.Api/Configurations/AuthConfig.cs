@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Radiao.Api.Configurations
 {
-    public static class JwtConfig
+    public static class AuthConfig
     {
         public static IServiceCollection ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
         {
@@ -26,6 +26,26 @@ namespace Radiao.Api.Configurations
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };
+            });
+
+            return services;
+        }
+
+        public static IServiceCollection ConfigureGoogleSignIn(this IServiceCollection services, IConfiguration configuration)
+        {
+            var clientId= configuration
+                .GetSection("Authentication")
+                .GetSection("Google")
+                .GetValue<string>("ClientId");
+
+            var clientSecret = configuration.GetSection("Authentication")
+                .GetSection("Google")
+                .GetValue<string>("ClientSecret");
+
+            services.AddAuthentication().AddGoogle(options =>
+            {
+                options.ClientId = clientId!;
+                options.ClientSecret = clientSecret!;
             });
 
             return services;

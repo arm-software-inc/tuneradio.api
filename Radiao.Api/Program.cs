@@ -17,6 +17,7 @@ builder.Services.ConfigCors();
 builder.Services.AddLogging(logging => logging.AddConsole());
 
 builder.Services.ConfigureJWT(builder.Configuration);
+builder.Services.ConfigureGoogleSignIn(builder.Configuration);
 
 builder.Services.ConfigureDependencyInjection();
 

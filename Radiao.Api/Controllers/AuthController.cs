@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Google.Apis.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Radiao.Api.Helpers;
 using Radiao.Api.ViewModels;
@@ -14,6 +15,7 @@ namespace Radiao.Api.Controllers
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
         private readonly IUserRepository _userRepository;
+        private readonly string _secret;
 
         public AuthController(
             ILogger<AuthController> logger,
@@ -25,6 +27,8 @@ namespace Radiao.Api.Controllers
             _userRepository = userRepository;
             _configuration = configuration;
             _mapper = mapper;
+
+            _secret = _configuration.GetSection("JwtConfig").GetValue<string>("JwtSecret")!;
         }
 
         /// <summary>
@@ -46,8 +50,7 @@ namespace Radiao.Api.Controllers
                 return CustomResponse();
             }
 
-            var secret = _configuration.GetSection("JwtConfig").GetValue<string>("JwtSecret");
-            var token = TokenHelper.GenerateToken(user, secret);
+            var token = TokenHelper.GenerateToken(user, _secret);
 
             return CustomResponse(new AuthResultViewModel
             {
@@ -73,6 +76,42 @@ namespace Radiao.Api.Controllers
             }
 
             return Ok();
+        }
+
+        /// <summary>
+        /// Valida o token de autenticação do Google
+        /// </summary>
+        /// <param name="credential"></param>
+        /// <returns></returns>
+        [HttpPost("signin-google")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AuthResultViewModel))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponseViewModel))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> GoogleSignIn([FromForm] string credential)
+        {
+            GoogleJsonWebSignature.Payload payload = await GoogleJsonWebSignature.ValidateAsync(credential);
+
+            if (payload == null)
+            {
+                Notify("Não foi possível autenticar com o Google");
+                return CustomResponse();
+            }
+
+            var user = await _userRepository.GetByEmail(payload.Email);
+
+            if (user == null)
+            {
+                user = await _userRepository.Create(new Domain.Entities.User(payload.Email, "", payload.Name));
+            }
+
+            var token = TokenHelper.GenerateToken(user, _secret);
+
+            return Ok(new AuthResultViewModel
+            {
+                Token = token,
+                User = _mapper.Map<UserViewModel>(user)
+            });
+
         }
     }
 }
