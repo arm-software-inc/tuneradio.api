@@ -7,12 +7,15 @@ namespace Radiao.Domain.Services.Impl
     public class UserService : ServiceBase, IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IEmailService _emailService;
 
         public UserService(
             IUserRepository userRepository,
-            INotifier notifier) : base(notifier)
+            INotifier notifier,
+            IEmailService emailService) : base(notifier)
         {
             _userRepository = userRepository;
+            _emailService = emailService;
         }
 
         public async Task<User?> Create(User user)
@@ -26,6 +29,8 @@ namespace Radiao.Domain.Services.Impl
                 Notify("Este email já está sendo usado!");
                 return null;
             }
+
+            _ = _emailService.SendRegistration(user.Email, user.Name);
 
             return await _userRepository.Create(user);
         }
