@@ -21,3 +21,14 @@ CREATE TABLE if not exists tags (
 	IsActive BIT DEFAULT 1,
 	CreatedAt DATETIME DEFAULT NOW()
 );
+
+CREATE TABLE if NOT EXISTS template_emails (
+	Id CHAR(36) PRIMARY KEY,
+	`Name` VARCHAR(50) NOT NULL,
+	Template VARCHAR(5000) NOT NULL,
+	`TemplateType` INTEGER NOT NULL,
+	EmailSubject VARCHAR(100) NOT NULL,
+	IsActive BIT DEFAULT 1,
+	CreatedAt DATETIME DEFAULT NOW(),
+	UpdatedAt DATETIME
+);
