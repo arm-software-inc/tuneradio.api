@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Google.Apis.Auth;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Auth.OAuth2.Flows;
 using Microsoft.AspNetCore.Mvc;
 using Radiao.Api.Helpers;
 using Radiao.Api.ViewModels;
@@ -82,20 +84,45 @@ namespace Radiao.Api.Controllers
         /// <summary>
         /// Valida o token de autenticação do Google
         /// </summary>
-        /// <param name="credential"></param>
+        /// <param name="code"></param>
         /// <returns></returns>
         [HttpPost("signin-google")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AuthResultViewModel))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponseViewModel))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> GoogleSignIn([FromForm] string credential)
+        public async Task<ActionResult> GoogleSignIn([FromForm] string code)
         {
             var clientId = _configuration
                 .GetSection("Authentication")
                 .GetSection("Google")
                 .GetValue<string>("ClientId");
 
-            GoogleJsonWebSignature.Payload payload = await GoogleJsonWebSignature.ValidateAsync(credential, new GoogleJsonWebSignature.ValidationSettings
+            var clientSecret = _configuration
+                .GetSection("Authentication")
+                .GetSection("Google")
+                .GetValue<string>("ClientSecret");
+
+            var redirectUrl = _configuration
+                .GetSection("Authentication")
+                .GetSection("Google")
+                .GetValue<string>("RedirectUrl");
+
+            var authorizationCodeFlow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
+            {
+                ClientSecrets = new ClientSecrets
+                {
+                    ClientSecret = clientSecret,
+                    ClientId = clientId,
+                }
+            });
+
+            var tokenResponse = await authorizationCodeFlow.ExchangeCodeForTokenAsync(
+                "",
+                code,
+                redirectUri: redirectUrl,
+                CancellationToken.None);
+
+            GoogleJsonWebSignature.Payload payload = await GoogleJsonWebSignature.ValidateAsync(tokenResponse.IdToken, new GoogleJsonWebSignature.ValidationSettings
             {
                 Audience = new List<string> { clientId! },
             });
