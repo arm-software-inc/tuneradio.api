@@ -3,11 +3,12 @@ using Google.Apis.Auth;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Radiao.Api.Helpers;
 using Radiao.Api.ViewModels;
+using Radiao.Domain.Options;
 using Radiao.Domain.Repositories;
 using Radiao.Domain.Services.Notifications;
-using System.Configuration;
 
 namespace Radiao.Api.Controllers
 {
@@ -18,6 +19,7 @@ namespace Radiao.Api.Controllers
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
         private readonly IUserRepository _userRepository;
+        private readonly GoogleAuthenticationOptions _googleAuthenticationOptions;
         private readonly string _secret;
 
         public AuthController(
@@ -25,13 +27,15 @@ namespace Radiao.Api.Controllers
             INotifier notifier,
             IUserRepository userRepository,
             IConfiguration configuration,
-            IMapper mapper) : base(logger, notifier)
+            IMapper mapper,
+            IOptions<GoogleAuthenticationOptions> googleAuthenticationOptions) : base(logger, notifier)
         {
             _userRepository = userRepository;
             _configuration = configuration;
             _mapper = mapper;
 
             _secret = _configuration.GetSection("JwtConfig").GetValue<string>("JwtSecret")!;
+            _googleAuthenticationOptions = googleAuthenticationOptions.Value;
         }
 
         /// <summary>
@@ -92,39 +96,24 @@ namespace Radiao.Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> GoogleSignIn([FromForm] string code)
         {
-            var clientId = _configuration
-                .GetSection("Authentication")
-                .GetSection("Google")
-                .GetValue<string>("ClientId");
-
-            var clientSecret = _configuration
-                .GetSection("Authentication")
-                .GetSection("Google")
-                .GetValue<string>("ClientSecret");
-
-            var redirectUrl = _configuration
-                .GetSection("Authentication")
-                .GetSection("Google")
-                .GetValue<string>("RedirectUrl");
-
             var authorizationCodeFlow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
             {
                 ClientSecrets = new ClientSecrets
                 {
-                    ClientSecret = clientSecret,
-                    ClientId = clientId,
+                    ClientSecret = _googleAuthenticationOptions.ClientSecret,
+                    ClientId = _googleAuthenticationOptions.ClientId,
                 }
             });
 
             var tokenResponse = await authorizationCodeFlow.ExchangeCodeForTokenAsync(
                 "",
                 code,
-                redirectUri: redirectUrl,
+                redirectUri: _googleAuthenticationOptions.RedirectUrl,
                 CancellationToken.None);
 
             GoogleJsonWebSignature.Payload payload = await GoogleJsonWebSignature.ValidateAsync(tokenResponse.IdToken, new GoogleJsonWebSignature.ValidationSettings
             {
-                Audience = new List<string> { clientId! },
+                Audience = new List<string> { _googleAuthenticationOptions.ClientId },
             });
 
             if (payload == null)

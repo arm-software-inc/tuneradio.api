@@ -18,9 +18,8 @@ builder.Services.AddLogging(logging => logging.AddConsole());
 
 builder.Services.ConfigureJWT(builder.Configuration);
 builder.Services.ConfigureGoogleSignIn(builder.Configuration);
-
+builder.Services.ConfigureOptions(builder.Configuration);
 builder.Services.ConfigureDependencyInjection();
-
 builder.Services.ConfigureSwagger();
 
 builder.Services.AddControllers();

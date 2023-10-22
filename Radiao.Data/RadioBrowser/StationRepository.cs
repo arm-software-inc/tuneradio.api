@@ -131,7 +131,7 @@ namespace Radiao.Data.RadioBrowser
                 query.Append($"&tagList={param.TagList}");
             }
 
-            return await _httpClient.GetAsync($"/json/stations/search?{query.ToString().ToLower()}", new CancellationToken());
+            return await _httpClient.GetAsync($"/json/stations/search?{query.ToString()}", new CancellationToken());
         }
     }
 }
