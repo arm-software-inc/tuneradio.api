@@ -18,6 +18,7 @@ namespace Radiao.Api.Configurations
             services.AddScoped<IFavoriteRepository, FavoriteRepository>();
             services.AddScoped<ITagRepository, TagRepository>();
             services.AddScoped<ITemplateEmailRepository, TemplateEmailRepository>();
+            services.AddScoped<IUserHistoryRepository, UserHistoryRepository>();
 
             // services
             services.AddScoped<INotifier, Notifier>();
@@ -25,6 +26,7 @@ namespace Radiao.Api.Configurations
             services.AddScoped<ITagService, TagService>();
             services.AddScoped<ITemplateEmailService, TemplateEmailService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IUserHistoryService, UserHistoryService>();
 
             // others
             services.AddAutoMapper(typeof(Program).Assembly);

@@ -14,6 +14,9 @@ namespace Radiao.Api.Mappings
             CreateMap<UserViewModel, User>();
 
             CreateMap<EditUserViewModel, User>();
+
+            CreateMap<UserHistoryViewModel, UserHistory>();
+            CreateMap<UserHistory, UserHistoryResponseViewModel>();
         }
     }
 }

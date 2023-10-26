@@ -19,6 +19,8 @@ namespace Radiao.Api.Controllers
         private readonly IUserRepository _userRepository;
         private readonly IFavoriteRepository _favoriteRepository;
         private readonly IStationRepository _stationRepository;
+        private readonly IUserHistoryRepository _userHistoryRepository;
+        private readonly IUserHistoryService _userHistoryService;
 
         public UserController(
             ILogger<UserController> logger,
@@ -27,13 +29,17 @@ namespace Radiao.Api.Controllers
             IMapper mapper,
             IUserRepository userRepository,
             IFavoriteRepository favoriteRepository,
-            IStationRepository stationRepository) : base(logger, notifier)
+            IStationRepository stationRepository,
+            IUserHistoryRepository userHistoryRepository,
+            IUserHistoryService userHistoryService) : base(logger, notifier)
         {
             _userService = userService;
             _mapper = mapper;
             _userRepository = userRepository;
             _favoriteRepository = favoriteRepository;
             _stationRepository = stationRepository;
+            _userHistoryRepository = userHistoryRepository;
+            _userHistoryService = userHistoryService;
         }
 
         /// <summary>
@@ -192,6 +198,61 @@ namespace Radiao.Api.Controllers
             await _favoriteRepository.Delete(favorite.Id);
 
             return CustomResponse();
+        }
+
+        /// <summary>
+        /// Create a history from logged user
+        /// </summary>
+        /// <param name="userHistoryViewModel"></param>
+        /// <returns></returns>
+        [HttpPost("history")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponseViewModel))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> PostHistory([FromBody] UserHistoryViewModel userHistoryViewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return CustomResponse(ModelState);
+            }
+
+            await _userHistoryRepository
+                .Create(_mapper.Map<UserHistory>(userHistoryViewModel));
+
+            return CustomResponse();
+        }
+
+        /// <summary>
+        /// Clear all access history from logged user
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete("history")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> DeleteHistory()
+        {
+            var userId = GetUserId();
+
+            await _userHistoryRepository
+                .DeleteByUserId(userId);
+
+            return CustomResponse();
+        }
+
+        /// <summary>
+        /// Fetch the user history
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("history")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<UserHistoryResponseViewModel>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<List<UserHistoryResponseViewModel>>> GetHistory()
+        {
+            var userId = GetUserId();
+
+            var history = await _userHistoryService.GetByUserId(userId);
+
+            return CustomResponse(_mapper.Map<List<UserHistoryResponseViewModel>>(history));
         }
     }
 }
